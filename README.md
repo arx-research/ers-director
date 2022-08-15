@@ -8,7 +8,7 @@ Sends a chip scan to the correct location!
 
 ```
 npm install
-~~~
+```
 
 ### Develop
 
