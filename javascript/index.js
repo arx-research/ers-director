@@ -1,4 +1,5 @@
-import { ethers } from "ethers";
+import { Provider } from "@ethersproject/providers";
+import { Contract } from "@ethersproject/contracts";
 import URL from "url-parse";
 import { abi } from "./abi.json";
 import parseKeys from "./helpers/parseKeys";
@@ -9,12 +10,12 @@ const ENS_NETWORK = "https://opt-mainnet.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJ
 
 async function readContract() {
   // Create Provider.
-  const provider = new ethers.providers.JsonRpcProvider(
+  const provider = new Provider.JsonRpcProvider(
     ENS_NETWORK
   );
 
   // Create contract instance.
-  const contact = await new ethers.Contract(
+  const contact = await new Contract(
     ENS_REGISTRY,
     abi,
     provider
