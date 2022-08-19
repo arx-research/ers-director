@@ -4,8 +4,8 @@ import { abi } from "./abi.json";
 import parseKeys from "./helpers/parseKeys";
 
 // Canonical ENS registry and network.
-const ENS_REGISTRY = "0x58228adF88fe48E421A8220Ede6CCFE70AB2A785";
-const ENS_NETWORK = "https://kovan.optimism.io";
+const ENS_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
+const ENS_NETWORK = "https://opt-mainnet.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
 
 async function readContract() {
   // Create Provider.

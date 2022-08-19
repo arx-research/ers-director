@@ -21,3 +21,10 @@ npm run dev
 ```
 npm run build
 ```
+
+## TODOs
+
+- [ ] Minify JavaScript.
+- [ ] Remove `ethers` in favor of direct RPC call.
+- [ ] Timeout in the event of an RPC failure.
+- [ ] Add fallback RPC nodes.
