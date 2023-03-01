@@ -3,6 +3,21 @@ import URL from "url-parse";
 import { abi } from "./abi.json";
 import parseKeys from "./helpers/parseKeys";
 
+function fixUrl(url) {
+  let u = url;
+  const hasHttp = url.indexOf("http://") > -1;
+  const hasHttps = url.indexOf("https://") > -1;
+
+  if (!hasHttp && !hasHttps) {
+    u = "https://" + u;
+  }
+
+  const urlObj = new URL(u);
+  u.protocol = "https";
+
+  return urlObj.toString();
+}
+
 // Canonical ENS registry and network.
 const ENS_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
 const ENS_NETWORK =
@@ -49,7 +64,9 @@ async function readContract() {
 
     if (exists) {
       const url = await contact.chipUri(chipId);
-      window.location.href = url + "?" + params;
+      const u = fixUrl(url);
+
+      window.location.href = u + "?" + params;
     } else {
       window.location.href = "https://halo.vrfy.ch/" + "?" + params;
     }
