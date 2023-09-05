@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "esbuild javascript/index.js --outfile=build/scripts.js --bundle --minify --sourcemap --watch",
-    "build": "esbuild javascript/index.js --outfile=build/scripts.js --bundle --minify"
+    "build": "esbuild javascript/index.js --outfile=build/scripts.js --bundle --minify",
+    "deploy-local": "npm run dev & http-server"
   },
   "keywords": [],
   "author": "",
