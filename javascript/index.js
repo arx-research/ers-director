@@ -67,7 +67,7 @@ async function checkLegacy(url) {
 
     return { exists, "redirectUrl": u + "?" + params };
   } else {
-    return { exists, "redirectUrl": "https://halo.vrfy.ch" };
+    return { exists, "redirectUrl": "" };
   }
 }
 
@@ -87,7 +87,6 @@ function parseRecordsForContentApp(data) {
 }
 
 async function checkERS(url) {
-  // 0x1Be84c8Fdd9d945AeE2fc66CF0B2809d2C8f36f4 <-- chip has been claimed on Goerli
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
@@ -97,8 +96,8 @@ async function checkERS(url) {
   const chipRegistry = await new ethers.Contract(CHIP_REGISTRY, ersAbi, provider);
 
   const statik = url.query.static || makeStatic(pk1, pk2, pk3);
-  const chipId = "0x" + parseKeys(statik).slice(26);     // remove 0x and 12 bytes from computed public key
-  console.log(chipId);
+  const chipId = keysToAddress(statik);
+
   try {
     let blockTag = "latest";
     const data = await provider.call({
@@ -117,7 +116,7 @@ async function readContract() {
   // Run function.
   const url = new URL(window.location.href, true);
 
-  const { pk1, pk2, pk3 } = url.query;
+  const { pk1} = url.query;
   
   // No params
   if (!url.query.static && !pk1) {
@@ -130,8 +129,14 @@ async function readContract() {
       window.location.href = legacy.redirectUrl;
       return;
     } else {
-      const contentApp = await checkERS(url);
-      window.location.href = contentApp;
+      try {
+        const contentApp = await checkERS(url);
+        window.location.href = contentApp;
+        return;
+      } catch(e) {
+        window.location.href = "https://halo.vrfy.ch";
+        return;
+      }
     }
   }
 }
