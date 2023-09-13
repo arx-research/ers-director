@@ -83,7 +83,13 @@ function parseRecordsForContentApp(data) {
   const formattedArrayOfRecords = arrayOfRecords.map((recordArray) => {return {recordType: ethers.utils.toUtf8String(recordArray[0]).replace(/\u0000/g, ''), content: ethers.utils.toUtf8String(recordArray[1]).replace(/\u0000/g, '')}; });
   formattedArrayOfRecords.filter((record) => record.recordType === "contentApp");
 
-  return formattedArrayOfRecords[0].content;
+  const contentAddress = formattedArrayOfRecords[0].content;
+
+  if (contentAddress.split(":")[0] == "ipfs") {
+    return `https://nftstorage.link/ipfs/${contentAddress.split("//")[1]}`;
+  } else {
+    return contentAddress;
+  }
 }
 
 async function checkERS(url) {
