@@ -93,6 +93,7 @@ function parseRecordsForContentApp(data) {
 }
 
 async function checkERS(url) {
+  console.log("Using Goerli deploy...");
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
