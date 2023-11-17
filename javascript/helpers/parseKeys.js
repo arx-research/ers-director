@@ -14,5 +14,9 @@ export function parseKeys(payload) {
 }
 
 export function keysToAddress(payload) {
-  return "0x" + parseKeys(payload).slice(26);     // remove 0x and first 12 bytes from computed public key
+  const pkLength = parseInt("0x" + payload.slice(0, 2)) * 2;
+  const pkRaw = payload.slice(2, pkLength + 2);
+
+  return ethers.utils.computeAddress("0x" + pkRaw);
+  // return "0x" + parseKeys(payload).slice(26);     // remove 0x and first 12 bytes from computed public key
 }

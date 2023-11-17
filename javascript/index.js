@@ -22,10 +22,10 @@ function fixUrl(url) {
 // Canonical ENS registry and network.
 const ENS_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
 const ENS_NETWORK =
-  "https://opt-mainnet.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
+"https://optimism-mainnet.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
 
-const CHIP_REGISTRY = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-const ERS_NETWORK = "https://eth-goerli.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
+const CHIP_REGISTRY = "0x7C3b3756e01fF450e56bfCcde521A58522666323";
+const ERS_NETWORK = "https://goerli.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
@@ -88,7 +88,8 @@ function parseRecordsForContentApp(data) {
   if (contentAddress.split(":")[0] == "ipfs") {
     return `https://nftstorage.link/ipfs/${contentAddress.split("//")[1]}`;
   } else {
-    return contentAddress;
+    const params = window.location.href.split("?")[1];
+    return contentAddress + "?" + params;
   }
 }
 
@@ -103,9 +104,9 @@ async function checkERS(url) {
 
   const statik = url.query.static || makeStatic(pk1, pk2, pk3);
   const chipId = keysToAddress(statik);
-  console.log(chipId);
   try {
     let blockTag = "latest";
+    console.log(chipId);
     const data = await provider.call({
       to: chipRegistry.address,
       ccipReadEnabled: true,
@@ -122,11 +123,11 @@ async function readContract() {
   // Run function.
   const url = new URL(window.location.href, true);
 
-  const { pk1} = url.query;
+  const { pk1 } = url.query;
   
   // No params
   if (!url.query.static && !pk1) {
-    window.location.href = "https://halo.vrfy.ch";
+    window.location.href = "https:///boot.arx.org";
     return;
   } else {
     const legacy = await checkLegacy(url);
@@ -140,7 +141,8 @@ async function readContract() {
         window.location.href = contentApp;
         return;
       } catch(e) {
-        // window.location.href = "https://halo.vrfy.ch";
+        const params = window.location.href.split("?")[1];
+        window.location.href = "https://boot.arx.org?" + params;
         return;
       }
     }
