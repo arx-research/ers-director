@@ -1,8 +1,12 @@
+import * as dotenv from 'dotenv';
+
 import { ethers } from "ethers";
 import URL from "url-parse";
 import { abi } from "./abi.json";
 import { abi as ersAbi } from "./chipRegistryAbi.json";
 import { parseKeys, keysToAddress } from "./helpers/parseKeys";
+
+dotenv.config();
 
 function fixUrl(url) {
   let u = url;
@@ -18,14 +22,6 @@ function fixUrl(url) {
 
   return urlObj.toString();
 }
-
-// Canonical ENS registry and network.
-const ENS_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
-const ENS_NETWORK =
-  "https://opt-mainnet.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
-
-const CHIP_REGISTRY = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-const ERS_NETWORK = "https://eth-goerli.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
@@ -51,10 +47,10 @@ async function checkLegacy(url) {
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
-  const provider = new ethers.providers.JsonRpcProvider(ENS_NETWORK);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.ENS_NETWORK);
 
   // Create contract instance.
-  const contract = await new ethers.Contract(ENS_REGISTRY, abi, provider);
+  const contract = await new ethers.Contract(process.env.ENS_REGISTRY, abi, provider);
 
   const statik = url.query.static || makeStatic(pk1, pk2, pk3);
   const chipId = parseKeys(statik);
@@ -96,14 +92,15 @@ async function checkERS(url) {
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
-  const provider = new ethers.providers.JsonRpcProvider(ERS_NETWORK);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.ERS_NETWORK);
 
   // Create contract instance.
-  const chipRegistry = await new ethers.Contract(CHIP_REGISTRY, ersAbi, provider);
+  const chipRegistry = await new ethers.Contract(process.env.CHIP_REGISTRY, ersAbi, provider);
 
   const statik = url.query.static || makeStatic(pk1, pk2, pk3);
   const chipId = keysToAddress(statik);
   console.log(chipId);
+  console.log("here");
   try {
     let blockTag = "latest";
     const data = await provider.call({
