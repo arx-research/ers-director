@@ -25,7 +25,7 @@ const ENS_NETWORK =
   "https://opt-mainnet.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
 
 const CHIP_REGISTRY = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-const ERS_NETWORK = "http://127.0.0.1:8545/";
+const ERS_NETWORK = "https://eth-goerli.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
