@@ -24,8 +24,8 @@ const ENS_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
 const ENS_NETWORK =
   "https://opt-mainnet.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
 
-const CHIP_REGISTRY = "0x369Ae94A0868a27154b2eB11B6dEb14B2cf0b7f0";
-const ERS_NETWORK = "https://goerli.infura.io/v3/a2fdbec687924872818c9d3cfeb67c9f";
+const CHIP_REGISTRY = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+const ERS_NETWORK = "http://127.0.0.1:8545/";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
@@ -93,7 +93,6 @@ function parseRecordsForContentApp(data) {
 }
 
 async function checkERS(url) {
-  console.log("Using Goerli deploy...");
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
@@ -104,7 +103,7 @@ async function checkERS(url) {
 
   const statik = url.query.static || makeStatic(pk1, pk2, pk3);
   const chipId = keysToAddress(statik);
-
+  console.log(chipId);
   try {
     let blockTag = "latest";
     const data = await provider.call({
@@ -112,7 +111,7 @@ async function checkERS(url) {
       ccipReadEnabled: true,
       data: chipRegistry.interface.encodeFunctionData("resolveChipId", [chipId]),
     }, blockTag);
-
+    console.log(data);
     return parseRecordsForContentApp(data);
   } catch(e) {
     throw e;
@@ -141,7 +140,7 @@ async function readContract() {
         window.location.href = contentApp;
         return;
       } catch(e) {
-        window.location.href = "https://halo.vrfy.ch";
+        // window.location.href = "https://halo.vrfy.ch";
         return;
       }
     }
