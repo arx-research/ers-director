@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import URL from "url-parse";
 import { abi } from "./abi.json";
-import parseKeys from "./helpers/parseKeys";
+import { abi as ersAbi } from "./chipRegistryAbi.json";
+import { parseKeys, keysToAddress } from "./helpers/parseKeys";
 
 function fixUrl(url) {
   let u = url;
@@ -21,7 +22,10 @@ function fixUrl(url) {
 // Canonical ENS registry and network.
 const ENS_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
 const ENS_NETWORK =
-  "https://opt-mainnet.g.alchemy.com/v2/Mx_q-MkGapjZcN0E6Kh4dJVbZq84F3zG";
+"https://optimism-mainnet.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
+
+const CHIP_REGISTRY = "0x7C3b3756e01fF450e56bfCcde521A58522666323";
+const ERS_NETWORK = "https://goerli.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
@@ -41,34 +45,106 @@ function makeStatic(pk1, pk2, pk3) {
   return out;
 }
 
-async function readContract() {
+// window.location.href = "https://halo.vrfy.ch/" + "?" + params;
+
+async function checkLegacy(url) {
+  const { pk1, pk2, pk3 } = url.query;
+
   // Create Provider.
   const provider = new ethers.providers.JsonRpcProvider(ENS_NETWORK);
 
   // Create contract instance.
-  const contact = await new ethers.Contract(ENS_REGISTRY, abi, provider);
+  const contract = await new ethers.Contract(ENS_REGISTRY, abi, provider);
 
-  // Run function.
-  const url = new URL(window.location.href, true);
+  const statik = url.query.static || makeStatic(pk1, pk2, pk3);
+  const chipId = parseKeys(statik);
+  const exists = await contract.chipExists(chipId);
+  const params = window.location.href.split("?")[1];
+
+  if (exists) {
+    const url = await contract.chipUri(chipId);
+    const u = fixUrl(url);
+
+    return { exists, "redirectUrl": u + "?" + params };
+  } else {
+    return { exists, "redirectUrl": "" };
+  }
+}
+
+function parseRecordsForContentApp(data) {
+  let arrayOfRecords;
+  const encoder = new ethers.utils.AbiCoder();
+  try{
+    arrayOfRecords = (encoder.decode(["tuple(bytes32,bytes)[]"], data))[0];
+  } catch (error){
+    throw new Error(`Something went wrong. Check the gateway's response. Call returned: ${data}`);
+  }
+  // Convert the bytes from each record in the array to a string and remove null characters
+  const formattedArrayOfRecords = arrayOfRecords.map((recordArray) => {return {recordType: ethers.utils.toUtf8String(recordArray[0]).replace(/\u0000/g, ''), content: ethers.utils.toUtf8String(recordArray[1]).replace(/\u0000/g, '')}; });
+  formattedArrayOfRecords.filter((record) => record.recordType === "contentApp");
+
+  const contentAddress = formattedArrayOfRecords[0].content;
+
+  if (contentAddress.split(":")[0] == "ipfs") {
+    return `https://nftstorage.link/ipfs/${contentAddress.split("//")[1]}`;
+  } else {
+    const params = window.location.href.split("?")[1];
+    return contentAddress + "?" + params;
+  }
+}
+
+async function checkERS(url) {
   const { pk1, pk2, pk3 } = url.query;
 
+  // Create Provider.
+  const provider = new ethers.providers.JsonRpcProvider(ERS_NETWORK);
+
+  // Create contract instance.
+  const chipRegistry = await new ethers.Contract(CHIP_REGISTRY, ersAbi, provider);
+
+  const statik = url.query.static || makeStatic(pk1, pk2, pk3);
+  const chipId = keysToAddress(statik);
+  try {
+    let blockTag = "latest";
+    console.log(chipId);
+    const data = await provider.call({
+      to: chipRegistry.address,
+      ccipReadEnabled: true,
+      data: chipRegistry.interface.encodeFunctionData("resolveChipId", [chipId]),
+    }, blockTag);
+    console.log(data);
+    return parseRecordsForContentApp(data);
+  } catch(e) {
+    throw e;
+  }
+}
+
+async function readContract() {
+  // Run function.
+  const url = new URL(window.location.href, true);
+
+  const { pk1 } = url.query;
+  
   // No params
   if (!url.query.static && !pk1) {
-    window.location.href = "https://halo.vrfy.ch";
+    window.location.href = "https:///boot.arx.org";
     return;
   } else {
-    const statik = url.query.static || makeStatic(pk1, pk2, pk3);
-    const chipId = parseKeys(statik);
-    const exists = await contact.chipExists(chipId);
-    const params = window.location.href.split("?")[1];
+    const legacy = await checkLegacy(url);
 
-    if (exists) {
-      const url = await contact.chipUri(chipId);
-      const u = fixUrl(url);
-
-      window.location.href = u + "?" + params;
+    if (legacy.exists) {
+      window.location.href = legacy.redirectUrl;
+      return;
     } else {
-      window.location.href = "https://halo.vrfy.ch/" + "?" + params;
+      try {
+        const contentApp = await checkERS(url);
+        window.location.href = contentApp;
+        return;
+      } catch(e) {
+        const params = window.location.href.split("?")[1];
+        window.location.href = "https://boot.arx.org?" + params;
+        return;
+      }
     }
   }
 }
