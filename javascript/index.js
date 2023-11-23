@@ -19,10 +19,9 @@ function fixUrl(url) {
   return urlObj.toString();
 }
 
-// Canonical ENS registry and network.
-const ENS_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
-const ENS_NETWORK =
-"https://optimism-mainnet.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
+// Canonical ERS Alpha registry and network.
+const ERS_ALPHA_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
+const ERS_ALPHA_NETWORK = "https://optimism-mainnet.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
 
 const CHIP_REGISTRY = "0x7C3b3756e01fF450e56bfCcde521A58522666323";
 const ERS_NETWORK = "https://goerli.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
@@ -51,10 +50,10 @@ async function checkLegacy(url) {
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
-  const provider = new ethers.providers.JsonRpcProvider(ENS_NETWORK);
+  const provider = new ethers.providers.JsonRpcProvider(ERS_ALPHA_NETWORK);
 
   // Create contract instance.
-  const contract = await new ethers.Contract(ENS_REGISTRY, abi, provider);
+  const contract = await new ethers.Contract(ERS_ALPHA_REGISTRY, abi, provider);
 
   const statik = url.query.static || makeStatic(pk1, pk2, pk3);
   const chipId = parseKeys(statik);
