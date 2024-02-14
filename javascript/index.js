@@ -23,7 +23,7 @@ function fixUrl(url) {
 const ERS_ALPHA_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
 const ERS_ALPHA_NETWORK = "https://optimism-mainnet.infura.io/v3/a2fdbec687924872818c9d3cfeb67c9f";
 
-const CHIP_REGISTRY = "0x7C3b3756e01fF450e56bfCcde521A58522666323";
+const CHIP_REGISTRY = "0xd1aB0240621Aa7C89b60f6D71013Bc62a43448FD";
 const ERS_NETWORK = "https://sepolia.infura.io/v3/a2fdbec687924872818c9d3cfeb67c9f";
 
 function makeStatic(pk1, pk2, pk3) {
