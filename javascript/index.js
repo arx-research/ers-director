@@ -21,10 +21,10 @@ function fixUrl(url) {
 
 // Canonical ERS Alpha registry and network.
 const ERS_ALPHA_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
-const ERS_ALPHA_NETWORK = "https://optimism-mainnet.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
+const ERS_ALPHA_NETWORK = "https://optimism-mainnet.infura.io/v3/a2fdbec687924872818c9d3cfeb67c9f";
 
 const CHIP_REGISTRY = "0x7C3b3756e01fF450e56bfCcde521A58522666323";
-const ERS_NETWORK = "https://sepolia.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
+const ERS_NETWORK = "https://sepolia.infura.io/v3/a2fdbec687924872818c9d3cfeb67c9f";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
@@ -93,6 +93,7 @@ function parseRecordsForContentApp(data) {
 }
 
 async function checkERS(url) {
+  console.log("Checking ERS");
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
@@ -114,6 +115,7 @@ async function checkERS(url) {
     console.log(data);
     return parseRecordsForContentApp(data);
   } catch(e) {
+    console.log(e);
     throw e;
   }
 }
@@ -140,8 +142,9 @@ async function readContract() {
         window.location.href = contentApp;
         return;
       } catch(e) {
-        const params = window.location.href.split("?")[1];
-        window.location.href = "https://boot.arx.org?" + params;
+        console.log(e);
+        // const params = window.location.href.split("?")[1];
+        // window.location.href = "https://boot.arx.org?" + params;
         return;
       }
     }

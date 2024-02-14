@@ -21,8 +21,10 @@ npm install
 ### Develop
 
 ```
-npm run dev
+npm run deploy-local
 ```
+
+A local development server will be hosted at http://localhost:8080.
 
 ### Build
 
