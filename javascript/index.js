@@ -24,7 +24,7 @@ const ERS_ALPHA_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
 const ERS_ALPHA_NETWORK = "https://optimism-mainnet.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
 
 const CHIP_REGISTRY = "0x7C3b3756e01fF450e56bfCcde521A58522666323";
-const ERS_NETWORK = "https://goerli.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
+const ERS_NETWORK = "https://sepolia.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
