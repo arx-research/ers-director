@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import URL from "url-parse";
-import { abi } from "./abi.json";
-import { abi as ersAbi } from "./chipRegistryAbi.json";
+import { chipTableAbi } from "./chipTableAbi.json";
+import { chipRegistryAbi } from "./chipRegistryAbi.json";
 import { parseKeys, keysToAddress } from "./helpers/parseKeys";
 
 function fixUrl(url) {
@@ -20,11 +20,11 @@ function fixUrl(url) {
 }
 
 // Canonical ERS Alpha registry and network.
-const ERS_ALPHA_REGISTRY = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
-const ERS_ALPHA_NETWORK = "https://optimism-mainnet.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
+const CHIP_TABLE = "0xB26A49dAD928C6A045e23f00683e3ee9F65dEB23";
+const OP_NETWORK = "https://optimism-mainnet.infura.io/v3/b544d9fcdee84377af9b70f5402a1542";
 
-const CHIP_REGISTRY = "0x7C3b3756e01fF450e56bfCcde521A58522666323";
-const ERS_NETWORK = "https://goerli.infura.io/v3/33e8ce6ff2974d66afaf78eef19f9dfe";
+const CHIP_REGISTRY = "0xbbB1c125A8eA6feabD6524953cB4b8CD876345ED";
+const BASE_NETWORK = "https://base-mainnet.infura.io/v3/b544d9fcdee84377af9b70f5402a1542";
 
 function makeStatic(pk1, pk2, pk3) {
   let out = "41" + pk1;
@@ -50,13 +50,13 @@ async function checkLegacy(url) {
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
-  const provider = new ethers.providers.JsonRpcProvider(ERS_ALPHA_NETWORK);
+  const provider = new ethers.providers.JsonRpcProvider(OP_NETWORK);
 
   // Create contract instance.
-  const contract = await new ethers.Contract(ERS_ALPHA_REGISTRY, abi, provider);
+  const contract = await new ethers.Contract(CHIP_TABLE, chipTableAbi, provider);
 
-  const statik = url.query.static || makeStatic(pk1, pk2, pk3);
-  const chipId = parseKeys(statik);
+  const staticParam = url.query.static || makeStatic(pk1, pk2, pk3);
+  const chipId = parseKeys(staticParam);
   const exists = await contract.chipExists(chipId);
   const params = window.location.href.split("?")[1];
 
@@ -96,20 +96,19 @@ async function checkERS(url) {
   const { pk1, pk2, pk3 } = url.query;
 
   // Create Provider.
-  const provider = new ethers.providers.JsonRpcProvider(ERS_NETWORK);
+  const provider = new ethers.providers.JsonRpcProvider(BASE_NETWORK);
 
   // Create contract instance.
-  const chipRegistry = await new ethers.Contract(CHIP_REGISTRY, ersAbi, provider);
+  const chipRegistry = await new ethers.Contract(CHIP_REGISTRY, chipRegistryAbi, provider);
 
-  const statik = url.query.static || makeStatic(pk1, pk2, pk3);
-  const chipId = keysToAddress(statik);
+  const staticParam = url.query.static || makeStatic(pk1, pk2, pk3);
+  const chipId = keysToAddress(staticParam);
   try {
     let blockTag = "latest";
     console.log(chipId);
     const data = await provider.call({
       to: chipRegistry.address,
-      ccipReadEnabled: true,
-      data: chipRegistry.interface.encodeFunctionData("resolveChipId", [chipId]),
+      data: chipRegistry.interface.encodeFunctionData("resolveChip", [chipId]),
     }, blockTag);
     console.log(data);
     return parseRecordsForContentApp(data);
