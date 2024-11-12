@@ -56,7 +56,9 @@ async function checkLegacy(url) {
   const contract = await new ethers.Contract(CHIP_TABLE, chipTableAbi, provider);
 
   const staticParam = url.query.static || makeStatic(pk1, pk2, pk3);
+  console.log(`staticParam: ${staticParam}`);
   const chipId = parseKeys(staticParam);
+  console.log(`chipId: ${chipId}`);
   const exists = await contract.chipExists(chipId);
   const params = window.location.href.split("?")[1];
 
@@ -128,10 +130,12 @@ async function readContract() {
     window.location.href = "https:///boot.arx.org";
     return;
   } else {
+    console.log("checking legacy");
     const legacy = await checkLegacy(url);
 
     if (legacy.exists) {
-      window.location.href = legacy.redirectUrl;
+      console.log(`redirecting to ${legacy.redirectUrl}`);
+      // window.location.href = legacy.redirectUrl;
       return;
     } else {
       try {
