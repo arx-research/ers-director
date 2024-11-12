@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import URL from "url-parse";
-import { chipTableAbi } from "./chipTableAbi.json";
-import { chipRegistryAbi } from "./chipRegistryAbi.json";
+import { abi as chipTableAbi } from "./chipTableAbi.json";
+import { abi as chipRegistryAbi } from "./chipRegistryAbi.json";
 import { parseKeys, keysToAddress } from "./helpers/parseKeys";
 
 function fixUrl(url) {
