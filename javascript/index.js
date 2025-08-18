@@ -138,6 +138,7 @@ async function readContract() {
       // window.location.href = legacy.redirectUrl;
       return;
     } else {
+      console.log("checking ers");
       try {
         const contentApp = await checkERS(url);
         window.location.href = contentApp;
