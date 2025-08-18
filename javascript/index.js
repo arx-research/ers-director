@@ -44,8 +44,6 @@ function makeStatic(pk1, pk2, pk3) {
   return out;
 }
 
-// window.location.href = "https://halo.vrfy.ch/" + "?" + params;
-
 async function checkLegacy(url) {
   const { pk1, pk2, pk3 } = url.query;
 
@@ -135,10 +133,10 @@ async function readContract() {
 
     if (legacy.exists) {
       console.log(`redirecting to ${legacy.redirectUrl}`);
-      // window.location.href = legacy.redirectUrl;
+      window.location.href = legacy.redirectUrl;
       return;
     } else {
-      console.log("checking ers");
+      console.log("not legacy, checking ers");
       try {
         const contentApp = await checkERS(url);
         window.location.href = contentApp;
